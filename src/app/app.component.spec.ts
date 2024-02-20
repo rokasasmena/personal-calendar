@@ -1,11 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { CalendarComponent } from './modules/calendar/calendar.component';
 
 describe('AppComponent', () => {
   beforeEach(() => TestBed.configureTestingModule({
     imports: [RouterTestingModule],
-    declarations: [AppComponent]
+    declarations: [AppComponent, CalendarComponent],
+    schemas: [
+      NO_ERRORS_SCHEMA
+  ]
   }));
 
   it('should create the app', () => {
@@ -20,10 +25,9 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('personal-calendar');
   });
 
-  it('should render title', () => {
+  it(`should have as title 'personal-calendar'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('personal-calendar app is running!');
+    const app = fixture.componentInstance;
+    expect(app.title).toEqual('personal-calendar');
   });
 });

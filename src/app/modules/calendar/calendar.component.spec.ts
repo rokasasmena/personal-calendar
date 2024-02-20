@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CalendarComponent } from './calendar.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
 
 describe('CalendarComponent', () => {
   let component: CalendarComponent;
@@ -8,7 +9,8 @@ describe('CalendarComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [CalendarComponent]
+      declarations: [CalendarComponent],
+      imports: [FullCalendarModule]
     });
     fixture = TestBed.createComponent(CalendarComponent);
     component = fixture.componentInstance;
@@ -19,3 +21,5 @@ describe('CalendarComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+

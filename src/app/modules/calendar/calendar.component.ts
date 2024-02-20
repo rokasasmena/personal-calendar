@@ -1,10 +1,19 @@
-import { Component, signal, ChangeDetectorRef } from '@angular/core';
-import { CalendarOptions, DateSelectArg, EventClickArg, EventApi } from '@fullcalendar/core';
+import { Component, signal, ChangeDetectorRef, OnInit } from '@angular/core';
+import {
+  CalendarOptions,
+  DateSelectArg,
+  EventClickArg,
+  EventApi,
+} from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import { INITIAL_EVENTS, createEventId } from 'src/app/helpers/event-utils';
+import { Store } from '@ngrx/store';
+import { addEvent, deleteEvent } from '../../actions/event.actions';
+import { MatDialog } from '@angular/material/dialog';
+import { EventDialogComponent } from '../event-dialog/event-dialog.component';
 
 interface DateClickArg {
   date: Date;
@@ -15,25 +24,20 @@ interface DateClickArg {
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.scss']
+  styleUrls: ['./calendar.component.scss'],
 })
-export class CalendarComponent {
+export class CalendarComponent implements OnInit {
   calendarVisible = signal(true);
   calendarOptions = signal<CalendarOptions>({
     firstDay: 1,
-    plugins: [
-      interactionPlugin,
-      dayGridPlugin,
-      timeGridPlugin,
-      listPlugin,
-    ],
+    plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin],
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
     },
     initialView: 'dayGridMonth',
-    initialEvents: INITIAL_EVENTS, // alternatively, use the `events` setting to fetch from a feed
+    initialEvents: INITIAL_EVENTS,
     weekends: true,
     editable: true,
     selectable: true,
@@ -41,7 +45,7 @@ export class CalendarComponent {
     dayMaxEvents: true,
     select: this.handleDateSelect.bind(this),
     eventClick: this.handleEventClick.bind(this),
-    eventsSet: this.handleEvents.bind(this)
+    eventsSet: this.handleEvents.bind(this),
     /* you can update a remote database when these fire:
     eventAdd:
     eventChange:
@@ -49,8 +53,28 @@ export class CalendarComponent {
     */
   });
   currentEvents = signal<EventApi[]>([]);
+  sidebarVisible = false;
+  clickedEvent: EventApi | null = null;
 
-  constructor(private changeDetector: ChangeDetectorRef) {
+  constructor(
+    private changeDetector: ChangeDetectorRef,
+    private store: Store,
+    private dialog: MatDialog
+  ) {}
+
+  ngOnInit() {
+    this.sidebarVisible = false;
+    console.log('this.sidebarVisible', this.sidebarVisible);
+  }
+
+  toggleSidebar(eventId: string) {
+    console.log('Clicked event ID:', eventId);
+    this.sidebarVisible = true;
+    this.changeDetector.detectChanges();
+  }
+
+  closeSidebar() {
+    this.sidebarVisible = false;
   }
 
   handleCalendarToggle() {
@@ -64,30 +88,63 @@ export class CalendarComponent {
   }
 
   handleDateSelect(selectInfo: DateSelectArg) {
-    const title = prompt('Please enter a new title for your event');
-    const calendarApi = selectInfo.view.calendar;
-
-    calendarApi.unselect(); // clear date selection
-
-    if (title) {
-      calendarApi.addEvent({
-        id: createEventId(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay
-      });
-    }
+    const dialogRef = this.dialog.open(EventDialogComponent, {
+      width: '400px',
+      data: { event: selectInfo }
+    });
+  
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const eventData = {
+          id: createEventId(),
+          title: result,
+          start: selectInfo.startStr,
+          end: selectInfo.endStr,
+          allDay: selectInfo.allDay,
+          description: '',
+        };
+  
+        console.log('New event data:', eventData);
+  
+        this.store.dispatch(addEvent({ event: eventData }));
+  
+        selectInfo.view.calendar.addEvent({
+          id: eventData.id,
+          title: eventData.title,
+          start: eventData.start,
+          end: eventData.end,
+          allDay: eventData.allDay,
+        });
+      }
+    });
   }
 
   handleEventClick(clickInfo: EventClickArg) {
-    if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      clickInfo.event.remove();
+    this.clickedEvent = clickInfo.event;
+    this.sidebarVisible = true;
+  }
+
+  deleteEvent() {
+    if (!this.clickedEvent || !this.clickedEvent.title) {
+      console.error("Clicked event or its title is undefined");
+      return;
+    }
+
+    if (
+      confirm(
+        `Are you sure you want to delete the event '${this.clickedEvent.title}'`
+      )
+    ) {
+      console.log('Event ID to delete:', this.clickedEvent.id);
+
+      this.store.dispatch(deleteEvent({ eventId: this.clickedEvent.id }));
+      this.clickedEvent.remove();
+      this.sidebarVisible = false;
     }
   }
 
   handleEvents(events: EventApi[]) {
     this.currentEvents.set(events);
-    this.changeDetector.detectChanges(); // workaround for pressionChangedAfterItHasBeenCheckedError
+    this.changeDetector.detectChanges();
   }
 }

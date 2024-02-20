@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>Please enter a new title for your event</h2>
+<mat-dialog-content>
+  <div class="title-container">
+    <span class="title-label">Title</span>
+    <mat-form-field class="custom-text-field-wrapper">
+      <input matInput placeholder="Event Title" [(ngModel)]="eventTitle" />
+    </mat-form-field>
+  </div>
+  <div class="title-container">
+    <span class="title-label">Title</span>
+    <mat-form-field>
+        <textarea matInput placeholder="Event Description" [(ngModel)]="eventDescription" rows="4"></textarea>
+      </mat-form-field>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onSave()">Save</button>
+  <button mat-button (click)="onClose()">Close</button>
+</mat-dialog-actions>
