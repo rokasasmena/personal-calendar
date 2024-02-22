@@ -1,42 +1,73 @@
 import { EventInput } from '@fullcalendar/core';
 import { TaskType, Event } from '../modules/models/event';
+import { eventTypeColors } from './event-colors';
+
+interface MyEventInput extends EventInput {
+  description: string;
+  type: string;
+}
 
 let eventGuid = 0;
 const TODAY = new Date();
 const TOMORROW = new Date(TODAY);
 TOMORROW.setDate(TOMORROW.getDate() + 1);
+const THIRD_DAY = new Date(TOMORROW);
+THIRD_DAY.setDate(TOMORROW.getDate() + 2);
 
-function convertToEventInput(event: Event): EventInput {
+const UX_UI_START_DATE = new Date('2024-02-26');
+const BUSINESS_TRIP_START_DATE = new Date('2024-02-05');
+const BUSINESS_TRIP_END_DATE = new Date('2024-02-08');
+
+function convertToEventInput(event: Event): MyEventInput {
+  const backgroundColor = eventTypeColors[event.type];
+
   return {
     id: event.id,
     title: event.title,
-    start: event.date,
-    end: event.date,
-    allDay: true,
+    description: event.description,
+    type: event.type,
+    start: event.startTime,
+    end: event.endTime,
+    allDay: event.allDay,
+    backgroundColor: backgroundColor,
   };
 }
 
-export const INITIAL_EVENTS: EventInput[] = [
+export const INITIAL_EVENTS: MyEventInput[] = [
   convertToEventInput({
     id: createEventId(),
-    title: 'All-day event',
+    title: 'Refinement session',
     date: TODAY,
     startTime: TODAY,
     endTime: TODAY,
-    type: TaskType.MEETING,
+    type: TaskType.CALL,
     description: '',
+    allDay: true,
   }),
   convertToEventInput({
     id: createEventId(),
-    title: 'All-day event',
-    date: TOMORROW,
-    startTime: TOMORROW,
-    endTime: TOMORROW,
+    title: 'UX/UI update/review session',
+    date: UX_UI_START_DATE,
+    startTime: UX_UI_START_DATE,
+    endTime: THIRD_DAY,
     type: TaskType.MEETING,
     description: '',
+    allDay: true,
+  }),
+  convertToEventInput({
+    id: createEventId(),
+    title: 'Business trip',
+    date: BUSINESS_TRIP_START_DATE,
+    startTime: BUSINESS_TRIP_START_DATE,
+    endTime: BUSINESS_TRIP_END_DATE,
+    type: TaskType.MEETING,
+    description: '',
+    allDay: true,
   }),
 ];
 
 export function createEventId() {
   return String(eventGuid++);
 }
+
+export { MyEventInput };

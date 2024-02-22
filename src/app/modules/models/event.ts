@@ -1,3 +1,5 @@
+import { EventApi } from '@fullcalendar/core';
+
 export enum TaskType {
   MEETING = 'Meeting',
   CALL = 'Call',
@@ -7,9 +9,10 @@ export enum TaskType {
 export class Event {
   id: string = '';
   title: string = '';
+  description: string = '';
   date: Date = new Date();
   startTime: Date = new Date();
   endTime: Date = new Date();
+  allDay: boolean = true;
   type: TaskType = TaskType.MEETING;
-  description: string = '';
 }

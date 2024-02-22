@@ -9,17 +9,18 @@ import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
-import { INITIAL_EVENTS, createEventId } from 'src/app/helpers/event-utils';
+import {
+  INITIAL_EVENTS,
+  createEventId,
+  MyEventInput,
+} from 'src/app/helpers/event-utils';
 import { Store } from '@ngrx/store';
 import { addEvent, deleteEvent } from '../../actions/event.actions';
 import { MatDialog } from '@angular/material/dialog';
 import { EventDialogComponent } from '../event-dialog/event-dialog.component';
-
-interface DateClickArg {
-  date: Date;
-  dateStr: string;
-  allDay: boolean;
-}
+import { TaskType } from '../models/event';
+import { eventTypeColors } from 'src/app/helpers/event-colors';
+import { Event } from '../models/event';
 
 @Component({
   selector: 'app-calendar',
@@ -52,9 +53,10 @@ export class CalendarComponent implements OnInit {
     eventRemove:
     */
   });
-  currentEvents = signal<EventApi[]>([]);
+  currentEvents = signal<MyEventInput[]>([]);
   sidebarVisible = false;
   clickedEvent: EventApi | null = null;
+  selectedEvent: Event = new Event();
 
   constructor(
     private changeDetector: ChangeDetectorRef,
@@ -73,6 +75,14 @@ export class CalendarComponent implements OnInit {
     this.changeDetector.detectChanges();
   }
 
+  getSortedEvents(): MyEventInput[] {
+    return this.currentEvents().sort((a, b) => {
+      return (
+        new Date(a['startTime']).getTime() - new Date(b['startTime']).getTime()
+      );
+    });
+  }
+
   closeSidebar() {
     this.sidebarVisible = false;
   }
@@ -89,31 +99,39 @@ export class CalendarComponent implements OnInit {
 
   handleDateSelect(selectInfo: DateSelectArg) {
     const dialogRef = this.dialog.open(EventDialogComponent, {
-      width: '400px',
-      data: { event: selectInfo }
+      width: '630px',
+      data: { event: selectInfo },
     });
-  
-    dialogRef.afterClosed().subscribe(result => {
+
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
+        const eventType = result.type as TaskType;
+        const backgroundColor = eventTypeColors[eventType];
+
         const eventData = {
           id: createEventId(),
-          title: result,
-          start: selectInfo.startStr,
-          end: selectInfo.endStr,
+          title: result.title,
+          description: result.description,
+          type: eventType,
+          startTime: result.startTime,
+          endTime: result.endTime,
           allDay: selectInfo.allDay,
-          description: '',
+          backgroundColor: backgroundColor,
         };
-  
+
         console.log('New event data:', eventData);
-  
+
         this.store.dispatch(addEvent({ event: eventData }));
-  
+
         selectInfo.view.calendar.addEvent({
           id: eventData.id,
           title: eventData.title,
-          start: eventData.start,
-          end: eventData.end,
+          description: eventData.description,
+          type: eventData.type,
+          start: eventData.startTime,
+          end: eventData.endTime,
           allDay: eventData.allDay,
+          backgroundColor: eventData.backgroundColor,
         });
       }
     });
@@ -121,12 +139,24 @@ export class CalendarComponent implements OnInit {
 
   handleEventClick(clickInfo: EventClickArg) {
     this.clickedEvent = clickInfo.event;
+    const eventApi = clickInfo.event;
+    this.selectedEvent = {
+      id: eventApi.id,
+      title: eventApi.title,
+      description: eventApi.extendedProps['description'],
+      date: new Date(eventApi.startStr),
+      startTime: new Date(eventApi.startStr),
+      endTime: new Date(eventApi.endStr),
+      allDay: eventApi.allDay,
+      type: eventApi.extendedProps['type'],
+    };
+    console.log(this.selectedEvent);
     this.sidebarVisible = true;
   }
 
   deleteEvent() {
-    if (!this.clickedEvent || !this.clickedEvent.title) {
-      console.error("Clicked event or its title is undefined");
+    if (!this.clickedEvent) {
+      console.error('Clicked event or its title is undefined');
       return;
     }
 
@@ -137,14 +167,27 @@ export class CalendarComponent implements OnInit {
     ) {
       console.log('Event ID to delete:', this.clickedEvent.id);
 
-      this.store.dispatch(deleteEvent({ eventId: this.clickedEvent.id }));
       this.clickedEvent.remove();
+      this.store.dispatch(deleteEvent({ eventId: this.clickedEvent.id }));
       this.sidebarVisible = false;
     }
   }
 
   handleEvents(events: EventApi[]) {
-    this.currentEvents.set(events);
-    this.changeDetector.detectChanges();
+    console.log(events);
+    setTimeout(() => {
+      const convertedEvents: MyEventInput[] = events.map((event) => ({
+        id: event.id,
+        title: event.title,
+        startTime: event.start ? event.start.toISOString() : '',
+        end: event.end ? event.end.toISOString() : '',
+        allDay: event.allDay,
+        description: event.extendedProps
+          ? event.extendedProps['description'] || ''
+          : '',
+        type: event.extendedProps ? event.extendedProps['type'] || '' : '',
+      }));
+      this.currentEvents.set(convertedEvents);
+    });
   }
 }

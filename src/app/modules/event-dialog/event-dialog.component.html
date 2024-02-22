@@ -1,19 +1,105 @@
-<h2 mat-dialog-title>Please enter a new title for your event</h2>
+<h2 mat-dialog-title class="event-label">Create new event</h2>
 <mat-dialog-content>
-  <div class="title-container">
-    <span class="title-label">Title</span>
-    <mat-form-field class="custom-text-field-wrapper">
-      <input matInput placeholder="Event Title" [(ngModel)]="eventTitle" />
-    </mat-form-field>
-  </div>
-  <div class="title-container">
-    <span class="title-label">Title</span>
-    <mat-form-field>
-        <textarea matInput placeholder="Event Description" [(ngModel)]="eventDescription" rows="4"></textarea>
+  <form [formGroup]="eventForm">
+    <div class="input-container">
+      <span class="input-label">Title</span>
+      <mat-form-field class="custom-text-field-wrapper">
+        <input matInput placeholder="Event Title" formControlName="title" />
       </mat-form-field>
-  </div>
+      <small
+        class="p-error"
+        *ngIf="
+          eventForm.controls['title'] &&
+          eventForm.controls['title'].errors &&
+          eventForm.controls['title'].errors['required'] &&
+          (eventForm.controls['title'].dirty ||
+            eventForm.controls['title'].touched)
+        "
+      >
+        Event name is required.
+      </small>
+    </div>
+    <div class="input-container">
+      <span class="input-label">Description</span>
+      <mat-form-field class="custom-text-field-wrapper">
+        <textarea
+          matInput
+          placeholder="Event Description"
+          formControlName="description"
+          rows="1"
+        ></textarea>
+      </mat-form-field>
+    </div>
+    <div class="type-container">
+      <div class="input-container">
+        <span class="input-label">Type</span>
+        <mat-form-field appearance="fill" class="custom-text-field-wrapper">
+          <mat-select formControlName="type">
+            <mat-option
+              *ngFor="let type of getTaskTypeValues()"
+              [value]="type"
+              >{{ type }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+        <small
+          class="p-error"
+          *ngIf="
+            eventForm.controls['type'] &&
+            eventForm.controls['type'].errors &&
+            eventForm.controls['type'].errors['required'] &&
+            (eventForm.controls['type'].dirty ||
+              eventForm.controls['type'].touched)
+          "
+        >
+          Event type is required.
+        </small>
+      </div>
+    </div>
+    <!-- Other form controls for description, type, etc. -->
+    <div class="input-container">
+      <span class="input-label">Start Date</span>
+      <mat-form-field class="custom-text-field-wrapper">
+        <input
+          matInput
+          [matDatepicker]="startDatePicker"
+          placeholder="Start Date"
+          formControlName="startTime"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="startDatePicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #startDatePicker></mat-datepicker>
+      </mat-form-field>
+      <!-- Display formatted start date -->
+      <div *ngIf="eventForm.controls['startTime'].value" class="formatted-date">
+        {{ eventForm.controls["startTime"].value | date : "yyyy-MM-dd" }}
+      </div>
+    </div>
+
+    <div class="input-container">
+      <span class="input-label">End Time</span>
+      <mat-form-field appearance="fill" class="custom-text-field-wrapper">
+        <input
+          matInput
+          [matDatepicker]="endTimePicker"
+          placeholder="End Time"
+          formControlName="endTime"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="endTimePicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #endTimePicker></mat-datepicker>
+      </mat-form-field>
+      <div *ngIf="eventForm.controls['endTime'].value" class="formatted-date">
+        {{ eventForm.controls["endTime"].value | date : "yyyy-MM-dd" }}
+      </div>
+    </div>
+  </form>
 </mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-button (click)="onSave()">Save</button>
-  <button mat-button (click)="onClose()">Close</button>
+<mat-dialog-actions class="save-close-buttons">
+  <button mat-stroked-button color="primary" (click)="onSave()">Save</button>
+  <button mat-stroked-button (click)="onClose()">Close</button>
 </mat-dialog-actions>
