@@ -92,9 +92,10 @@ export class CalendarComponent implements OnInit {
   }
 
   handleWeekendsToggle() {
-    this.calendarOptions.mutate((options) => {
-      options.weekends = !options.weekends;
-    });
+    this.calendarOptions.update((options) => ({
+      ...options,
+      weekends: !options.weekends,
+    }));
   }
 
   handleDateSelect(selectInfo: DateSelectArg) {
