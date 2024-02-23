@@ -46,7 +46,7 @@ b {
 }
 
 .demo-app-sidebar.visible {
-  right: 0; /* Slide in the sidebar when it's visible */
+  right: 0;
 }
 
 .demo-app-sidebar-section {
@@ -54,7 +54,6 @@ b {
 }
 
 .fc {
-  /* the calendar root */
   max-width: 1100px;
   margin: 0 auto;
 }
@@ -70,10 +69,6 @@ b {
   white-space: break-spaces;
 }
 
-::ng-deep .fc-event {
-  height: 2rem;
-}
-
 .event-list {
   display: flex;
   flex-wrap: wrap;
@@ -81,7 +76,7 @@ b {
 
 .event-card {
   width: 100%;
-  margin: 10px;
+  margin: 10px 0;
 }
 
 .event-info {
@@ -92,4 +87,15 @@ b {
 
 .selected-event {
   width: 100%;
+}
+
+.expand-toggle {
+  width: 24px;
+  height: 24px;
+}
+
+.all-events-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }

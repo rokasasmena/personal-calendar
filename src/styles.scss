@@ -7,3 +7,10 @@ body > * { /* the app-root */
   padding: 0;
   height: 100%;
 }
+
+
+app-calendar {
+  .fc-event {
+    height: 2rem;
+  }
+}

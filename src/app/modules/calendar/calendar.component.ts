@@ -47,16 +47,12 @@ export class CalendarComponent implements OnInit {
     select: this.handleDateSelect.bind(this),
     eventClick: this.handleEventClick.bind(this),
     eventsSet: this.handleEvents.bind(this),
-    /* you can update a remote database when these fire:
-    eventAdd:
-    eventChange:
-    eventRemove:
-    */
   });
   currentEvents = signal<MyEventInput[]>([]);
   sidebarVisible = false;
   clickedEvent: EventApi | null = null;
   selectedEvent: Event = new Event();
+  isEventListExpanded: boolean = false;
 
   constructor(
     private changeDetector: ChangeDetectorRef,
@@ -190,5 +186,9 @@ export class CalendarComponent implements OnInit {
       }));
       this.currentEvents.set(convertedEvents);
     });
+  }
+
+  toggleEventList() {
+    this.isEventListExpanded = !this.isEventListExpanded;
   }
 }
