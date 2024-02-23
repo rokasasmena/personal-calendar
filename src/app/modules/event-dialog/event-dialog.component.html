@@ -72,10 +72,6 @@
         ></mat-datepicker-toggle>
         <mat-datepicker #startDatePicker></mat-datepicker>
       </mat-form-field>
-      <!-- Display formatted start date -->
-      <div *ngIf="eventForm.controls['startTime'].value" class="formatted-date">
-        {{ eventForm.controls["startTime"].value | date : "yyyy-MM-dd" }}
-      </div>
     </div>
 
     <div class="input-container">
@@ -86,6 +82,7 @@
           [matDatepicker]="endTimePicker"
           placeholder="End Time"
           formControlName="endTime"
+          [min]="eventForm.controls['startTime'].value"
         />
         <mat-datepicker-toggle
           matSuffix
@@ -93,13 +90,10 @@
         ></mat-datepicker-toggle>
         <mat-datepicker #endTimePicker></mat-datepicker>
       </mat-form-field>
-      <div *ngIf="eventForm.controls['endTime'].value" class="formatted-date">
-        {{ eventForm.controls["endTime"].value | date : "yyyy-MM-dd" }}
-      </div>
     </div>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions class="save-close-buttons">
-  <button mat-stroked-button color="primary" (click)="onSave()">Save</button>
+  <button mat-stroked-button color="primary" (click)="onSave()" [disabled]="!eventForm.valid">Save</button>
   <button mat-stroked-button (click)="onClose()">Close</button>
 </mat-dialog-actions>

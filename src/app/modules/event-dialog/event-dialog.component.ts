@@ -23,13 +23,20 @@ export class EventDialogComponent {
       ]),
       description: new FormControl('', [Validators.maxLength(255)]),
       type: new FormControl('', Validators.required),
-      startTime: new FormControl(null),
-      endTime: new FormControl(null),
+      startTime: new FormControl(null, Validators.required),
+      endTime: new FormControl(null, Validators.required),
     });
-  }
 
-  formatDate(date: string): string {
-    return new Date(date).toISOString().substring(0, 10);
+    this.eventForm.get('startTime')?.valueChanges.subscribe((startTime: Date) => {
+      const endDateControl = this.eventForm.get('endTime');
+      if (endDateControl && startTime) {
+        endDateControl.enable();
+        const currentEndDate = endDateControl.value;
+        if (currentEndDate && currentEndDate < startTime) {
+          endDateControl.setValue(null);
+        }
+      }
+    });
   }
 
   onSave(): void {
