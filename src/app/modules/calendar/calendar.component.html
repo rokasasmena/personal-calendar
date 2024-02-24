@@ -17,13 +17,16 @@
       class="example-container"
       mode="side"
     >
-      <div class="close-sidebar" (click)="closeSidebar()">X</div>
-      <div class="demo-app-sidebar-section">
+      <div class="close-sidebar" (click)="closeSidebar()">
+        <mat-icon>cancel</mat-icon>
+      </div>
+      <div class="demo-app-sidebar-section-main">
         <h2>Instructions</h2>
         <ul>
           <li>Select dates and you will be prompted to create a new event</li>
           <li>Drag, drop, and resize events</li>
           <li>Click an event to see more details</li>
+          <li>Click delete to delete selected event</li>
         </ul>
         <label>
           <input
@@ -36,10 +39,18 @@
       </div>
       <div class="demo-app-sidebar-section">
         <h2 class="all-events-container">
-          All Events ({{ currentEvents.length }})
-            <button (click)="toggleEventList()" class="expand-toggle" mat-mini-fab color="primary" aria-label="Toggle event list">
-              <mat-icon>{{ isEventListExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
-            </button>
+          All Events ({{ eventsLength }})
+          <button
+            (click)="toggleEventList()"
+            class="expand-toggle"
+            mat-mini-fab
+            color="primary"
+            aria-label="Toggle event list"
+          >
+            <mat-icon>{{
+              isEventListExpanded ? "expand_less" : "expand_more"
+            }}</mat-icon>
+          </button>
         </h2>
         <div class="event-list" *ngIf="isEventListExpanded">
           <mat-card *ngFor="let event of getSortedEvents()" class="event-card">
@@ -68,7 +79,7 @@
       </div>
 
       <div class="demo-app-sidebar-section" *ngIf="selectedEvent">
-        <h2>Selected Event</h2>
+        <h2 class="selected-event-label">Selected Event</h2>
         <mat-card class="selected-event">
           <mat-card-content>
             <div class="event-info">
@@ -95,12 +106,13 @@
               <div class="label">Type:</div>
               <div class="value">{{ selectedEvent.type }}</div>
             </div>
+            <div class="delete-button">
+              <button mat-stroked-button color="warn" (click)="deleteEvent()">
+                Delete
+              </button>
+            </div>
           </mat-card-content>
         </mat-card>
-      </div>
-
-      <div class="demo-app-sidebar-section">
-        <button (click)="deleteEvent()">Delete Event</button>
       </div>
     </mat-drawer>
   </mat-drawer-container>

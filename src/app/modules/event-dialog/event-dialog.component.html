@@ -94,6 +94,13 @@
   </form>
 </mat-dialog-content>
 <mat-dialog-actions class="save-close-buttons">
-  <button mat-stroked-button color="primary" (click)="onSave()" [disabled]="!eventForm.valid">Save</button>
+  <button
+    mat-stroked-button
+    color="primary"
+    (click)="onSave()"
+    [disabled]="!eventForm.valid"
+  >
+    Save
+  </button>
   <button mat-stroked-button (click)="onClose()">Close</button>
 </mat-dialog-actions>

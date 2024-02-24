@@ -35,7 +35,7 @@ export class CalendarComponent implements OnInit {
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+      right: 'dayGridMonth,listWeek',
     },
     initialView: 'dayGridMonth',
     initialEvents: INITIAL_EVENTS,
@@ -53,6 +53,7 @@ export class CalendarComponent implements OnInit {
   clickedEvent: EventApi | null = null;
   selectedEvent: Event = new Event();
   isEventListExpanded: boolean = false;
+  eventsLength: number = 0;
 
   constructor(
     private changeDetector: ChangeDetectorRef,
@@ -62,11 +63,9 @@ export class CalendarComponent implements OnInit {
 
   ngOnInit() {
     this.sidebarVisible = false;
-    console.log('this.sidebarVisible', this.sidebarVisible);
   }
 
   toggleSidebar(eventId: string) {
-    console.log('Clicked event ID:', eventId);
     this.sidebarVisible = true;
     this.changeDetector.detectChanges();
   }
@@ -116,8 +115,6 @@ export class CalendarComponent implements OnInit {
           backgroundColor: backgroundColor,
         };
 
-        console.log('New event data:', eventData);
-
         this.store.dispatch(addEvent({ event: eventData }));
 
         selectInfo.view.calendar.addEvent({
@@ -147,7 +144,6 @@ export class CalendarComponent implements OnInit {
       allDay: eventApi.allDay,
       type: eventApi.extendedProps['type'],
     };
-    console.log(this.selectedEvent);
     this.sidebarVisible = true;
   }
 
@@ -162,8 +158,6 @@ export class CalendarComponent implements OnInit {
         `Are you sure you want to delete the event '${this.clickedEvent.title}'`
       )
     ) {
-      console.log('Event ID to delete:', this.clickedEvent.id);
-
       this.clickedEvent.remove();
       this.store.dispatch(deleteEvent({ eventId: this.clickedEvent.id }));
       this.sidebarVisible = false;
@@ -171,7 +165,6 @@ export class CalendarComponent implements OnInit {
   }
 
   handleEvents(events: EventApi[]) {
-    console.log(events);
     setTimeout(() => {
       const convertedEvents: MyEventInput[] = events.map((event) => ({
         id: event.id,
@@ -185,6 +178,7 @@ export class CalendarComponent implements OnInit {
         type: event.extendedProps ? event.extendedProps['type'] || '' : '',
       }));
       this.currentEvents.set(convertedEvents);
+      this.eventsLength = convertedEvents.length;
     });
   }
 

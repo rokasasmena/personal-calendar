@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms'; // Import FormGroup and FormControl
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TaskType } from '../models/event';
 
@@ -27,16 +27,18 @@ export class EventDialogComponent {
       endTime: new FormControl(null, Validators.required),
     });
 
-    this.eventForm.get('startTime')?.valueChanges.subscribe((startTime: Date) => {
-      const endDateControl = this.eventForm.get('endTime');
-      if (endDateControl && startTime) {
-        endDateControl.enable();
-        const currentEndDate = endDateControl.value;
-        if (currentEndDate && currentEndDate < startTime) {
-          endDateControl.setValue(null);
+    this.eventForm
+      .get('startTime')
+      ?.valueChanges.subscribe((startTime: Date) => {
+        const endDateControl = this.eventForm.get('endTime');
+        if (endDateControl && startTime) {
+          endDateControl.enable();
+          const currentEndDate = endDateControl.value;
+          if (currentEndDate && currentEndDate < startTime) {
+            endDateControl.setValue(null);
+          }
         }
-      }
-    });
+      });
   }
 
   onSave(): void {

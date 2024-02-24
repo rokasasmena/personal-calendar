@@ -6,7 +6,7 @@ export interface EventState {
 }
 
 export const initialState: EventState = {
-  entities: {}
+  entities: {},
 };
 
 export const eventReducer = createReducer(

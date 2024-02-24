@@ -41,7 +41,7 @@ export const INITIAL_EVENTS: MyEventInput[] = [
     startTime: TODAY,
     endTime: TODAY,
     type: TaskType.CALL,
-    description: '',
+    description: 'Meeting: refinement session',
     allDay: true,
   }),
   convertToEventInput({
@@ -51,7 +51,7 @@ export const INITIAL_EVENTS: MyEventInput[] = [
     startTime: UX_UI_START_DATE,
     endTime: THIRD_DAY,
     type: TaskType.MEETING,
-    description: '',
+    description: 'Meeting: UX/UI update/review session',
     allDay: true,
   }),
   convertToEventInput({
@@ -60,8 +60,8 @@ export const INITIAL_EVENTS: MyEventInput[] = [
     date: BUSINESS_TRIP_START_DATE,
     startTime: BUSINESS_TRIP_START_DATE,
     endTime: BUSINESS_TRIP_END_DATE,
-    type: TaskType.MEETING,
-    description: '',
+    type: TaskType.OUT,
+    description: 'Business trip: Sweden',
     allDay: true,
   }),
 ];

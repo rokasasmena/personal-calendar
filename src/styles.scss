@@ -1,16 +1,19 @@
-@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
 
 html,
 body,
-body > * { /* the app-root */
+body > * {
   margin: 0;
   padding: 0;
   height: 100%;
 }
 
-
 app-calendar {
   .fc-event {
     height: 2rem;
+  }
+
+  .mat-drawer-inner-container {
+    background-color: #f7fbfd;
   }
 }

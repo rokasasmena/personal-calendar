@@ -50,7 +50,16 @@ b {
 }
 
 .demo-app-sidebar-section {
-  padding: 2em;
+  padding: 0 2rem 2rem;
+}
+
+.demo-app-sidebar-section-main {
+  padding: 2rem;
+}
+
+.label {
+  margin-right: 7px;
+  font-weight: 600;
 }
 
 .fc {
@@ -82,7 +91,7 @@ b {
 .event-info {
   display: flex;
   flex-direction: row;
-  margin-bottom: 5px;
+  margin-bottom: 13px;
 }
 
 .selected-event {
@@ -98,4 +107,12 @@ b {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.selected-event-label {
+  margin-bottom: 1rem;
+}
+
+.delete-button {
+  margin-top: 15px;
 }
